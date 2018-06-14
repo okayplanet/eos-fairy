@@ -41,8 +41,12 @@ app.get('/eos-fairy/account/:acct', async (req, res, next) => {
     const acct = req.params.acct;
     console.log("/eos-fairy/account/" + acct);
 
-    var staked = await eos.getAccount(acct)
-    var unstaked = await eos.getCurrencyBalance('eosio.token', acct, 'EOS')
+    try {
+      var staked = await eos.getAccount(acct)
+      var unstaked = await eos.getCurrencyBalance('eosio.token', acct, 'EOS')
+    } catch(e) {
+      console.log(e)
+    }
 
     if(staked != null && unstaked != null) {
       res.send(formatApiResult({
@@ -50,7 +54,13 @@ app.get('/eos-fairy/account/:acct', async (req, res, next) => {
         "unstaked": unstaked
       }));
     } else {
-      res.send({});
+      res.send({
+        "balance": 0,
+        "staked": 0,
+        "unstaked": 0,
+        "net_staked": 0,
+        "cpu_staked": 0
+      });
     }
 })
 
